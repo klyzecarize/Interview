@@ -15,8 +15,20 @@ import {
 export default function Home() {
 
   let currentDate = moment();
-  // let bookedSlots = [];
-  let [bookedSlots, setBookedSlots] = useState(["21:00", "20:30", "11:00"]);
+  let [bookedSlots, setBookedSlots] = useState([
+    {
+      "name": "John Snow",
+      "time": "21:00"
+    }, 
+    {
+      "name": "Stewie Griffin",
+      "time": "20:30"
+    },
+    {
+      "name": "Patrick Star",
+      "time": "11:00"
+    }
+  ]);
   let [allSlots, setAllSlots] = useState(GetNextAvailableSlot(bookedSlots, currentDate));
 
   return (
@@ -32,8 +44,6 @@ export default function Home() {
       </Box>
       <Container 
         sx={{
-          width: 2000,
-          height: 300,
           marginTop: 1,
         }}
       >
@@ -73,7 +83,7 @@ export default function Home() {
           {
             allSlots.length != 0 ? allSlots.sort().map( (timeSlot, index) => {
               return <Grid key={index} size={2}>
-                <Slots key={index} time={timeSlot} onClick={ReserveSlot} />
+                <Slots key={index} time={timeSlot} setReserveSlot={ReserveSlot} />
               </Grid>
             })   : <Typography variant="h5" component="div">No Reserved Slots</Typography>
           }
@@ -82,8 +92,11 @@ export default function Home() {
     </>
   );
 
-  function ReserveSlot (time) {
-    bookedSlots.push(time)
+  function ReserveSlot (user,time) {
+    bookedSlots.push({
+      "name": user,
+      "time": time
+    })
 
     setAllSlots(GetNextAvailableSlot(bookedSlots, currentDate));
   }
@@ -100,14 +113,13 @@ export default function Home() {
       slots.push(currentTime.format("HH:mm"));
     }
 
-    console.log(bookings)
-
-    slots = slots.filter((slot) => {
-      if (!bookings.includes(slot.toString())) {
-        return slot >= setDate.format("HH:mm");
-      }
+    bookings.forEach(reservedSlot => {
+      slots = slots.filter(slot => {
+        if (!reservedSlot.time.includes(slot.toString())) {
+          return  slot >= setDate.format("HH:mm");
+        }
+      })
     });
-
     return slots;
   }
 }
