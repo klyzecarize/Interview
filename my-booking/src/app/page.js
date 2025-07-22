@@ -1,5 +1,6 @@
 import Slots from "./components/slots";
 import moment from "moment";
+import { Stack } from "@mui/material";
 
 export default function Home() {
 
@@ -12,17 +13,21 @@ export default function Home() {
       <h1>Bookings for {currentDate.format("MM/DD/YYYY")}</h1>
       <hr/>
       <h1>Reserved Slots</h1>
-      {
-        bookedSlots.sort().map( (timeSlot, index) => {
-          return <Slots key={index} time={timeSlot} />
-        })
-      }
+      <Stack direction="row" spacing={2}>
+        {
+          bookedSlots.sort().map( (timeSlot, index) => {
+            return <Slots key={index} time={timeSlot} />
+          })
+        }
+      </Stack>
       <h1>Available Slots</h1>
-      {
-        allSlots.map( (timeSlot, index) => {
-          return <Slots key={index} time={timeSlot} />
-        })
-      }
+      <Stack direction="row" spacing={2}>
+        {
+          allSlots.map( (timeSlot, index) => {
+            return <Slots key={index} time={timeSlot} />
+          })
+        }
+      </Stack>
     </>
   );
 }
