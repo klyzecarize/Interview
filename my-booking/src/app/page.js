@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Slots from "./components/slots";
 import ReservedSlots from "./components/reservedSlots";
 import moment from "moment";
@@ -15,23 +15,21 @@ import {
 export default function Home() {
 
   let currentDate = moment();
-  let [bookedSlots, setBookedSlots] = useState([
-    {
-      "name": "John Snow",
-      "time": "21:00"
-    }, 
-    {
-      "name": "Stewie Griffin",
-      "time": "20:30"
-    },
-    {
-      "name": "Patrick Star",
-      "time": "11:00"
-    }
-  ]);
-  let [allSlots, setAllSlots] = useState(GetNextAvailableSlot(bookedSlots, currentDate));
+  let [bookedSlots, setBookedSlots] = useState();
+  let [allSlots, setAllSlots] = useState();
+  let [loading, setLoading] = useState(true);
 
-  return (
+  useEffect(() => {
+    fetch('/api/slots')
+      .then((response) => response.json())
+      .then((data) => {
+        setBookedSlots(data.reserved);
+        setAllSlots(data.available);
+        setLoading(false)
+      });
+  }, []);
+  
+  return loading ? <p>loading</p> : (
     <>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
@@ -65,6 +63,7 @@ export default function Home() {
           }
         </Grid>
       </Container>
+      <hr/>
       <Container 
         sx={{
           width: 2000,
@@ -92,6 +91,7 @@ export default function Home() {
     </>
   );
 
+  // Update Reserved Slots
   function ReserveSlot (user,time) {
     bookedSlots.push({
       "name": user,
@@ -101,6 +101,7 @@ export default function Home() {
     setAllSlots(GetNextAvailableSlot(bookedSlots, currentDate));
   }
 
+  // Update Slots
   function GetNextAvailableSlot (bookings, setDate) {
     let slots = [];
     let setRemainingHours = (23 - setDate.get('hour')) * 2;
