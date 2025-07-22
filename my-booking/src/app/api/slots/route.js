@@ -1,28 +1,28 @@
 import moment from "moment";
 
-export function GET(request) {
-    let currentDate = moment();
-    
-    const slots = [
-        {
-        "name": "John Snow",
-        "time": "21:00"
-        }, 
-        {
-        "name": "Stewie Griffin",
-        "time": "20:30"
-        },
-        {
-        "name": "Patrick Star",
-        "time": "11:00"
-        }
-    ];
+let currentDate = moment();
 
-    const result = {
-        'reserved': slots,
-        'available': GetNextAvailableSlot (slots, currentDate)
-    };
+const slots = [
+    {
+    "name": "John Snow",
+    "time": "21:00"
+    }, 
+    {
+    "name": "Stewie Griffin",
+    "time": "20:30"
+    },
+    {
+    "name": "Patrick Star",
+    "time": "11:00"
+    }
+];
 
+const result = {
+    'reserved': slots,
+    'available': GetNextAvailableSlot (slots, currentDate)
+};
+
+export async function GET(request) {
     return new Response(JSON.stringify(result), {
         status: 200,
         headers: {'Content-Type': 'application/json'}

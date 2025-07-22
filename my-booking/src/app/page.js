@@ -91,6 +91,7 @@ export default function Home() {
     </>
   );
 
+  // Update Reserved Slots
   function ReserveSlot (user,time) {
     bookedSlots.push({
       "name": user,
@@ -100,6 +101,7 @@ export default function Home() {
     setAllSlots(GetNextAvailableSlot(bookedSlots, currentDate));
   }
 
+  // Update Slots
   function GetNextAvailableSlot (bookings, setDate) {
     let slots = [];
     let setRemainingHours = (23 - setDate.get('hour')) * 2;

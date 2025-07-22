@@ -27,10 +27,24 @@ const Slots = ({time, setReserveSlot}) => {
         setOpen(false);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        setReserveSlot(user, time);
-        setUser("");
+
+        const response = await fetch('/api/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user, time}),
+        })
+
+        const result = await response.json();
+        
+        if(result.message == "success"){
+            setReserveSlot(user, time);
+            setUser("");
+        }
+
         handleClose();
     };
 
