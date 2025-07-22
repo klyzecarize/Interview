@@ -1,39 +1,44 @@
 import React from 'react';
 import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import { 
+    Card,
+    CardContent,
+    CardActions,
+    Typography
+ } from "@mui/material";
 
-const Slots = ({time}) => {
+const Slots = ({time, onClick}) => {
 
-  return (
-    <>
-        <Container maxWidth="sm" 
-            sx={{
-                width: 200,
-                height: 200,
-                border: 'solid',
-            }}
-        >
-            {/* <Box
-            sx={{
-                width: 100,
-                height: 100,
-                borderRadius: 1,
-                bgcolor: 'primary.main',
-                '&:hover': {
-                    bgcolor: 'primary.dark',
-                },
-            }}
-            /> */}
-            <Button variant="contained">
-            asdasd
-            </Button>
-            <h1>Time: {time}</h1>
-        </Container>
+    function reserveSlot() {
+        onClick(time);
+    }
 
-        
-    </>
-  )
+    return (
+        <>
+            <Container
+                sx={{
+                    width: 225,
+                    height: 200,
+                }}
+            >
+                <Card>
+                    <CardContent>
+                        <Typography align='center' gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+                            Time:
+                        </Typography>
+                        <Typography align='center' variant="h5" component="div">
+                            {time}
+                        </Typography>
+                        <br />
+                    </CardContent>
+                    <CardActions>
+                        <Button variant='contained' size="small" onClick={reserveSlot}>Reserve</Button>
+                    </CardActions>
+                </Card>
+            </Container>
+        </>
+    )
 }
 
 export default Slots
