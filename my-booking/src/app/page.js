@@ -1,49 +1,127 @@
+'use client'
+import { useState } from "react";
 import Slots from "./components/slots";
+import ReservedSlots from "./components/reservedSlots";
 import moment from "moment";
+import { 
+  Container, 
+  Grid, 
+  Typography,
+  Box,
+  AppBar,
+  Toolbar
+} from "@mui/material";
 
 export default function Home() {
 
   let currentDate = moment();
-  let bookedSlots = ["21:00", "20:30", "11:00"];
-  let allSlots = GetNextAvailableSlot(bookedSlots, currentDate);
+  let [bookedSlots, setBookedSlots] = useState([
+    {
+      "name": "John Snow",
+      "time": "21:00"
+    }, 
+    {
+      "name": "Stewie Griffin",
+      "time": "20:30"
+    },
+    {
+      "name": "Patrick Star",
+      "time": "11:00"
+    }
+  ]);
+  let [allSlots, setAllSlots] = useState(GetNextAvailableSlot(bookedSlots, currentDate));
 
   return (
     <>
-      <h1>Bookings for {currentDate.format("MM/DD/YYYY")}</h1>
-      <hr/>
-      <h1>Reserved Slots</h1>
-      {
-        bookedSlots.sort().map( (timeSlot, index) => {
-          return <Slots key={index} time={timeSlot} />
-        })
-      }
-      <h1>Available Slots</h1>
-      {
-        allSlots.map( (timeSlot, index) => {
-          return <Slots key={index} time={timeSlot} />
-        })
-      }
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Bookings for {currentDate.format("MM/DD/YYYY")}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </Box>
+      <Container 
+        sx={{
+          marginTop: 1,
+        }}
+      >
+        <Typography variant="h5" component="div" sx={{ 
+            flexGrow: 1,
+            marginBottom: 2,
+          }}
+        >
+          Reserved Slots
+        </Typography>
+        
+        <Grid container spacing={2}>
+          {
+            bookedSlots.length != 0 ? bookedSlots.sort().map( (timeSlot, index) => {
+              return <Grid key={index} size={2}>
+                <ReservedSlots key={index} time={timeSlot} />
+              </Grid>
+            }) : <Typography variant="h5" component="div">No Reserved Slots</Typography>
+          }
+        </Grid>
+      </Container>
+      <Container 
+        sx={{
+          width: 2000,
+          height: 300
+        }}
+      >
+        <Typography variant="h5" component="div" 
+          sx={{ 
+            flexGrow: 1,
+            marginBottom: 2,
+          }}
+        >
+          Available Slots
+        </Typography>
+        <Grid alignItems={'center'} container spacing={2}>
+          {
+            allSlots.length != 0 ? allSlots.sort().map( (timeSlot, index) => {
+              return <Grid key={index} size={2}>
+                <Slots key={index} time={timeSlot} setReserveSlot={ReserveSlot} />
+              </Grid>
+            })   : <Typography variant="h5" component="div">No Reserved Slots</Typography>
+          }
+        </Grid>
+      </Container>
     </>
   );
-}
 
-function GetNextAvailableSlot (bookings, setDate) {
-  let slots = [];
-  let setRemainingHours = (23 - setDate.get('hour')) * 2;
-  let currentTime = setDate;
-  currentTime = moment();
-  currentTime.set({minute:0});
+  function ReserveSlot (user,time) {
+    bookedSlots.push({
+      "name": user,
+      "time": time
+    })
 
-  for (let i = 0; i <= setRemainingHours; i++) {
-    currentTime.add({minute:30});
-    slots.push(currentTime.format("HH:mm"));
+    setAllSlots(GetNextAvailableSlot(bookedSlots, currentDate));
   }
 
-  slots = slots.filter((slot) => {
-    if (!bookings.includes(slot.toString())) {
-      return slot >= setDate.format("HH:mm");
-    }
-  });
+  function GetNextAvailableSlot (bookings, setDate) {
+    let slots = [];
+    let setRemainingHours = (23 - setDate.get('hour')) * 2;
+    let currentTime = setDate;
+    currentTime = moment();
+    currentTime.set({minute:0});
 
-  return slots;
+    for (let i = 0; i <= setRemainingHours; i++) {
+      currentTime.add({minute:30});
+      slots.push(currentTime.format("HH:mm"));
+    }
+
+    bookings.forEach(reservedSlot => {
+      slots = slots.filter(slot => {
+        if (!reservedSlot.time.includes(slot.toString())) {
+          return  slot >= setDate.format("HH:mm");
+        }
+      })
+    });
+    return slots;
+  }
 }
+
+
